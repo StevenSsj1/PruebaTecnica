@@ -17,17 +17,6 @@ Esta es una aplicación desarrollada como parte de una prueba técnica. La aplic
    ```bash
    docker-compose up --build
    ```
-
-2. Aplica las migraciones de la base de datos:
-   ```bash
-   docker-compose exec backend npx prisma migrate deploy
-   ```
-
-3. (Opcional) Ejecuta el seed para datos iniciales:
-   ```bash
-   docker-compose exec backend npx prisma db seed
-   ```
-
 4. La aplicación estará disponible en:
    - Frontend: `http://localhost:3000`
    - Backend: `http://localhost:3002`
@@ -42,7 +31,7 @@ Esta es una aplicación desarrollada como parte de una prueba técnica. La aplic
 
 2. Aplica las migraciones:
    ```bash
-   npx prisma migrate dev
+   npx prisma migrate dev --name init
    ```
 
 3. Inicia el servidor:
@@ -50,7 +39,7 @@ Esta es una aplicación desarrollada como parte de una prueba técnica. La aplic
    npm run start:dev
    ```
 
-El backend estará disponible en `http://localhost:4000`.
+El backend estará disponible en `http://localhost:3002`.
 
 #### Frontend
 1. Instala las dependencias:
@@ -69,7 +58,7 @@ El frontend estará disponible en `http://localhost:3000`.
 ## Migraciones y Seed
 - **Migraciones**: Prisma se utiliza para manejar las migraciones de la base de datos. Para aplicarlas, utiliza:
   ```bash
-  npx prisma migrate deploy
+  npx prisma migrate dev --name init
   ```
 - **Seed**: Para poblar la base de datos con datos iniciales, ejecuta:
   ```bash
