@@ -10,6 +10,10 @@ Esta es una aplicación desarrollada como parte de una prueba técnica. La aplic
 ## Requisitos
 - **Docker** y **Docker Compose** instalados en tu máquina.
 - **Node.js** (opcional si deseas ejecutar el proyecto localmente sin Docker).
+- **Variales de entorno** Usar las variables de entorno las seccion Variables de entorno en el .env
+
+## Importante
+- Ya cuando se ejecuta la migración suelen tambien ejecutarse el seeder, pero si no ocurre usar el seeder como se especifica abajo.
 
 ## Instalación y Ejecución
 ### Con Docker Compose
