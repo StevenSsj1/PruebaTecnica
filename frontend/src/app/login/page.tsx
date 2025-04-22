@@ -90,9 +90,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Contraseña</Label>
-                <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-800">
-                  ¿Olvidaste tu contraseña?
-                </Link>
               </div>
               <Input
                 id="password"

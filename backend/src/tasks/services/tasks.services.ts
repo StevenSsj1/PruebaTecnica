@@ -7,61 +7,31 @@ import { UpdateTaskDto } from '../dto/update-task.dto';
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createTaskDto: CreateTaskDto, userEmail: string) {
-    // Obtener la organización del usuario autenticado
-    const user = await this.prisma.user.findUnique({
-      where: { email: userEmail },
-    });
-
-    if (!user) {
-      throw new ForbiddenException('User not found');
-    }
-    const { organizationId } = user;
+  async create(createTaskDto: CreateTaskDto, userId: string, organizationId: string) {
     return this.prisma.task.create({
       data: {
         ...createTaskDto,
-        description: createTaskDto.description,
-        userId: userEmail, 
-        organizationId, 
+        userId,
+        organizationId,
       },
     });
   }
 
-  async findAll(userEmail: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: userEmail },
-    });
-
-    if (!user) {
-      throw new ForbiddenException('User not found');
-    }
-
-    const { organizationId } = user;
-
+  async findAll(userId: string, organizationId: string) {
     return this.prisma.task.findMany({
       where: {
         organizationId,
-        deleted: false, // Excluir tareas marcadas como eliminadas
+        deleted: false,
       },
     });
   }
 
-  async findOne(id: string, userEmail: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: userEmail },
-    });
-
-    if (!user) {
-      throw new ForbiddenException('User not found');
-    }
-
-    const { organizationId } = user;
-
+  async findOne(id: string, userId: string, organizationId: string) {
     const task = await this.prisma.task.findFirst({
       where: {
         id,
         organizationId,
-        deleted: false, // Excluir tareas eliminadas
+        deleted: false,
       },
     });
 
@@ -72,8 +42,8 @@ export class TasksService {
     return task;
   }
 
-  async update(id: string, updateTaskDto: UpdateTaskDto, userEmail: string) {
-    const task = await this.findOne(id, userEmail);
+  async update(id: string, updateTaskDto: UpdateTaskDto, userId: string, organizationId: string) {
+    const task = await this.findOne(id, userId, organizationId);
 
     return this.prisma.task.update({
       where: { id: task.id },
@@ -81,8 +51,8 @@ export class TasksService {
     });
   }
 
-  async softDelete(id: string, userEmail: string) {
-    const task = await this.findOne(id, userEmail);
+  async softDelete(id: string, userId: string, organizationId: string) {
+    const task = await this.findOne(id, userId, organizationId);
 
     return this.prisma.task.update({
       where: { id: task.id },
@@ -90,17 +60,7 @@ export class TasksService {
     });
   }
 
-  async restore(id: string, userEmail: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: userEmail },
-    });
-
-    if (!user) {
-      throw new ForbiddenException('User not found');
-    }
-
-    const { organizationId } = user;
-
+  async restore(id: string, userId: string, organizationId: string) {
     const task = await this.prisma.task.findFirst({
       where: {
         id,
