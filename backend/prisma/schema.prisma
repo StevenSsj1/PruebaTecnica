@@ -15,17 +15,18 @@ datasource db {
 
 model Organization {
   id        String   @id @default(cuid())
-  name      String
+  name      String  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   users     User[]
+  tasks     Task[]
 }
 
 model User {
   id        String   @id @default(cuid())
   email     String  @unique
   password  String
-  organization Organization @relation(fields: [organizationId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [name])
   organizationId String
   tasks     Task[]
   createdAt DateTime @default(now())
@@ -41,6 +42,8 @@ model Task {
   deleted     Boolean  @default(false)
   authorUser  User   @relation(fields: [userId], references: [email])
   userId      String
+  organizationId String 
+  organization Organization @relation(fields: [organizationId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   history     TaskHistory[]
