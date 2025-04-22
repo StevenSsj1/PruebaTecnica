@@ -85,7 +85,7 @@ export default function DashboardPage() {
   const toggleTaskStatus = async (taskId: string, completed: boolean) => {
     try {
       const token = localStorage.getItem("token") || sessionStorage.getItem("token")
-      const response = await fetch(`http://tu-api-nestjs.com/tasks/${taskId}`, {
+      const response = await fetch(`http://localhost:3002/tasks/${taskId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

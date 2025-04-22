@@ -7,6 +7,7 @@ import { UpdateTaskDto } from '../dto/update-task.dto';
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // Crear una nueva tarea
   async create(createTaskDto: CreateTaskDto, userId: string, organizationId: string) {
     return this.prisma.task.create({
       data: {
@@ -17,20 +18,24 @@ export class TasksService {
     });
   }
 
-  async findAll(userId: string, organizationId: string) {
+  // Obtener todas las tareas de la organización del usuario
+  async findAll(email: string, organizationId: string) {
     return this.prisma.task.findMany({
       where: {
         organizationId,
+        userId: email,
         deleted: false,
       },
     });
   }
 
-  async findOne(id: string, userId: string, organizationId: string) {
+  // Buscar tarea por ID o Título (validando organización)
+  async findByIdOrTitle(identifier: string, userId: string, organizationId: string) {
     const task = await this.prisma.task.findFirst({
       where: {
-        id,
+        OR: [{ id: identifier }, { title: identifier }],
         organizationId,
+        userId, 
         deleted: false,
       },
     });
@@ -42,8 +47,24 @@ export class TasksService {
     return task;
   }
 
-  async update(id: string, updateTaskDto: UpdateTaskDto, userId: string, organizationId: string) {
-    const task = await this.findOne(id, userId, organizationId);
+  // Búsqueda parcial por título (validando organización)
+  async findByTitle(title: string, userId: string, organizationId: string) {
+    return this.prisma.task.findMany({
+      where: {
+        title: {
+          contains: title, 
+          mode: 'insensitive', 
+        },
+        organizationId,
+        userId,
+        deleted: false,
+      },
+    });
+  }
+
+  // Actualizar tarea por ID o título
+  async update(identifier: string, updateTaskDto: UpdateTaskDto, userId: string, organizationId: string) {
+    const task = await this.findByIdOrTitle(identifier, userId, organizationId);
 
     return this.prisma.task.update({
       where: { id: task.id },
@@ -51,8 +72,9 @@ export class TasksService {
     });
   }
 
-  async softDelete(id: string, userId: string, organizationId: string) {
-    const task = await this.findOne(id, userId, organizationId);
+  // Eliminar (soft delete) tarea por ID o título
+  async softDelete(identifier: string, userId: string, organizationId: string) {
+    const task = await this.findByIdOrTitle(identifier, userId, organizationId);
 
     return this.prisma.task.update({
       where: { id: task.id },
@@ -60,12 +82,14 @@ export class TasksService {
     });
   }
 
-  async restore(id: string, userId: string, organizationId: string) {
+  // Restaurar tarea eliminada por ID o título
+  async restore(identifier: string, userId: string, organizationId: string) {
     const task = await this.prisma.task.findFirst({
       where: {
-        id,
+        OR: [{ id: identifier }, { title: identifier }],
         organizationId,
-        deleted: true,
+        userId,
+        deleted: true, // Solo tareas eliminadas
       },
     });
 
