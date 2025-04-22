@@ -19,26 +19,28 @@ export class TasksService {
   }
 
   // Obtener todas las tareas de la organización del usuario
-  async findAll(email: string, organizationId: string) {
+  async findAll(sub: string, organizationId: string) {
     return this.prisma.task.findMany({
       where: {
         organizationId,
-        userId: email,
+        userId: sub,
         deleted: false,
       },
     });
   }
 
   // Buscar tarea por ID o Título (validando organización)
-  async findByIdOrTitle(identifier: string, userId: string, organizationId: string) {
+  async findByIdOrTitle(identifier: string, sub: string, organizationId: string) {
+
     const task = await this.prisma.task.findFirst({
       where: {
         OR: [{ id: identifier }, { title: identifier }],
         organizationId,
-        userId, 
+        userId: sub, 
         deleted: false,
       },
     });
+    console.log('Task found:', task);
 
     if (!task) {
       throw new ForbiddenException('Task not found or you do not have access to it');
@@ -64,7 +66,9 @@ export class TasksService {
 
   // Actualizar tarea por ID o título
   async update(identifier: string, updateTaskDto: UpdateTaskDto, userId: string, organizationId: string) {
+   
     const task = await this.findByIdOrTitle(identifier, userId, organizationId);
+    console.log('Task found:', task);
 
     return this.prisma.task.update({
       where: { id: task.id },
